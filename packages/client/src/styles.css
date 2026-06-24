@@ -1,0 +1,175 @@
+:root {
+  color: #f3efe4;
+  background: #10151c;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #10151c;
+}
+
+button {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.topbar {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #263241;
+  background: #151b24;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+
+.topbar p,
+.muted {
+  margin: 4px 0 0;
+  color: #aab5c3;
+  font-size: 13px;
+}
+
+.status {
+  padding: 8px 11px;
+  border-radius: 6px;
+  font-size: 13px;
+  border: 1px solid #3a4656;
+}
+
+.status.online {
+  color: #9ce7bd;
+}
+
+.status.offline {
+  color: #f2bd87;
+}
+
+.workspace {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 300px;
+}
+
+.city-panel,
+.detail-panel {
+  padding: 16px;
+  border-color: #263241;
+  background: #121820;
+  overflow: auto;
+}
+
+.city-panel {
+  border-right: 1px solid #263241;
+}
+
+.detail-panel {
+  border-left: 1px solid #263241;
+}
+
+.city-panel h2,
+.detail-panel h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.city-button {
+  width: 100%;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  color: #f3efe4;
+  background: #1b2430;
+  border: 1px solid #2d3a4b;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.game-frame {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  background: #0f141b;
+  overflow: hidden;
+}
+
+.game-frame canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.stats div {
+  padding: 9px;
+  border: 1px solid #2b3848;
+  border-radius: 6px;
+  background: #19212c;
+}
+
+.stats dt {
+  color: #9ba8b8;
+  font-size: 11px;
+}
+
+.stats dd {
+  margin: 4px 0 0;
+  font-size: 13px;
+}
+
+.meter {
+  height: 9px;
+  border-radius: 999px;
+  background: #273244;
+  overflow: hidden;
+}
+
+.meter span {
+  display: block;
+  height: 100%;
+  background: #d7b75a;
+}
+
+.actions {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+.actions li {
+  display: grid;
+  gap: 3px;
+  padding: 9px 0;
+  border-bottom: 1px solid #273241;
+}
+
+.actions span {
+  color: #aab5c3;
+  font-size: 12px;
+}

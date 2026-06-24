@@ -1,0 +1,28 @@
+{
+  "name": "yug-of-automata",
+  "version": "0.1.0",
+  "description": "A local RTS dashboard for your AI coding automata.",
+  "type": "module",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "license": "MIT",
+  "author": "SUDARSHANCHAUDHARI",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter @yug-of-automata/server dev -- --demo & pnpm --filter @yug-of-automata/client dev",
+    "demo": "pnpm --filter @yug-of-automata/server dev -- --demo & pnpm --filter @yug-of-automata/client dev",
+    "build": "pnpm --filter @yug-of-automata/shared build && pnpm --filter @yug-of-automata/server build && pnpm --filter @yug-of-automata/client build && pnpm --filter @yug-of-automata/cli build",
+    "test": "pnpm --filter @yug-of-automata/shared build && pnpm --filter @yug-of-automata/shared test && pnpm --filter @yug-of-automata/server test && pnpm --filter @yug-of-automata/client test && pnpm --filter @yug-of-automata/cli test",
+    "typecheck": "pnpm -r --if-present typecheck"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.2.0"
+  }
+}

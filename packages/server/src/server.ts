@@ -14,6 +14,7 @@ import {
 import { selectAdapters } from './adapters/index.js';
 import { startDemoWorld } from './demo.js';
 import { loadSettings, saveSettings, settingsDir } from './settings.js';
+import { StatsStore } from './stats.js';
 import { registerStatic, resolveClientDir } from './static.js';
 import { World } from './world.js';
 
@@ -57,6 +58,10 @@ export async function startServer(options: StartServerOptions): Promise<RunningS
   let settings: AppSettings = await loadSettings(configDir);
   world.setMapping(settings.mapping);
 
+  // Historical building stats persist only in live mode; demo writes nothing.
+  const stats = new StatsStore();
+  if (!options.demo) await stats.load(configDir);
+
   app.get('/health', async () => ({ ok: true, demo: options.demo }));
   app.get('/settings', async () => settings);
   app.put<{ Body: AppSettings }>('/settings', async (request) => {
@@ -71,7 +76,12 @@ export async function startServer(options: StartServerOptions): Promise<RunningS
     return settings.mapping;
   });
   app.get('/sessions', async () => world.snapshot().automata);
-  app.get('/building-stats', async () => buildingStats(world.snapshot()));
+  app.get('/building-stats', async () => ({
+    current: buildingStats(world.snapshot()),
+    day: stats.aggregate('day'),
+    week: stats.aggregate('week'),
+    month: stats.aggregate('month')
+  }));
 
   const clientDir = resolveClientDir();
   if (clientDir) await registerStatic(app, clientDir);
@@ -98,6 +108,27 @@ export async function startServer(options: StartServerOptions): Promise<RunningS
   if (options.demo) {
     stops.push(startDemoWorld(world));
   } else {
+    // Record each new building action once (deduped by its timestamp).
+    const lastActionTs = new Map<string, string>();
+    stops.push(
+      world.onEvent((event) => {
+        if (event.type !== 'automaton-updated') return;
+        const action = event.automaton.recentActions.at(-1);
+        if (!action) return;
+        if (lastActionTs.get(event.automaton.sessionId) === action.ts) return;
+        lastActionTs.set(event.automaton.sessionId, action.ts);
+        stats.record(action.building, Date.parse(action.ts) || Date.now());
+      })
+    );
+    const saveTimer = setInterval(() => {
+      void stats.save(configDir);
+    }, 30000);
+    saveTimer.unref();
+    stops.push(() => {
+      clearInterval(saveTimer);
+      void stats.save(configDir);
+    });
+
     const adapters = selectAdapters(options.sources).filter(
       (adapter) => settings.sources[adapter.id]?.enabled !== false
     );

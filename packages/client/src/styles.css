@@ -424,3 +424,35 @@ button {
   color: inherit;
   padding: 6px 4px;
 }
+
+/* Stats panel */
+.stats-panel { left: 18px; right: auto; }
+
+.stats-bars {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.stats-bars li {
+  display: grid;
+  grid-template-columns: 86px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.stats-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #273244;
+  overflow: hidden;
+}
+
+.stats-bar span {
+  display: block;
+  height: 100%;
+  background: #7c6cfc;
+}

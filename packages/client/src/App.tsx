@@ -3,6 +3,7 @@ import type { AutomatonSnapshot } from '@yug-of-automata/shared';
 import { ActivityFeed } from './ActivityFeed';
 import { GameCanvas } from './GameCanvas';
 import { SettingsPanel } from './SettingsPanel';
+import { StatsPanel } from './StatsPanel';
 import { getSettings } from './api';
 import { useWorld } from './store';
 import { connectWorld } from './ws';
@@ -13,6 +14,7 @@ export function App() {
   const setSettings = useWorld((state) => state.setSettings);
   const [selectedId, setSelectedId] = useState<string | undefined>();
   const [showSettings, setShowSettings] = useState(false);
+  const [showStats, setShowStats] = useState(false);
   const theme = settings?.theme ?? 'dark';
 
   const visibleAutomata = useMemo(
@@ -50,12 +52,16 @@ export function App() {
           <div className={connected ? 'status online' : 'status offline'}>
             {connected ? 'Connected' : 'Reconnecting'}
           </div>
+          <button type="button" className="ghost" onClick={() => setShowStats((value) => !value)}>
+            Stats
+          </button>
           <button type="button" className="ghost" onClick={() => setShowSettings((value) => !value)}>
             Settings
           </button>
         </div>
       </header>
 
+      {showStats ? <StatsPanel onClose={() => setShowStats(false)} /> : null}
       {showSettings ? <SettingsPanel onClose={() => setShowSettings(false)} /> : null}
 
       <section className="workspace">

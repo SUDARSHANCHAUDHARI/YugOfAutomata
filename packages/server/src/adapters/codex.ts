@@ -7,8 +7,8 @@ import {
 import type { AdapterContext, SourceAdapter } from './types.js';
 import { watchTranscripts } from './tail.js';
 
-export function codexGlob(home: string): string {
-  return join(home, '.codex', 'sessions', '**', '*.jsonl');
+export function codexRoot(home: string): string {
+  return join(home, '.codex', 'sessions');
 }
 
 interface CodexLine {
@@ -162,7 +162,8 @@ export const codexAdapter: SourceAdapter = {
   start(context: AdapterContext): () => void {
     const parsers = new Map<string, ReturnType<typeof createCodexParser>>();
     return watchTranscripts({
-      patterns: codexGlob(context.home),
+      roots: codexRoot(context.home),
+      match: (path) => path.endsWith('.jsonl'),
       activeWindowMs: context.activeWindowMs,
       usePolling: context.usePolling,
       onLines: (path, lines) => {

@@ -56,8 +56,13 @@ export class FileTailer {
 }
 
 export interface WatchOptions {
-  /** Absolute glob pattern(s) of transcript files to watch. */
-  patterns: string | string[];
+  /**
+   * Root director(ies) to watch recursively. chokidar v4+ does not support
+   * globs, so we watch directories and filter files with `match`.
+   */
+  roots: string | string[];
+  /** Returns true for files this watcher should tail (e.g. `*.jsonl`). */
+  match: (path: string) => boolean;
   /** Files whose mtime is older than this are treated as inactive. */
   activeWindowMs: number;
   usePolling?: boolean;
@@ -89,7 +94,7 @@ export function watchTranscripts(options: WatchOptions): () => void {
     if (lines.length > 0) options.onLines(path, lines);
   };
 
-  const watcher = chokidar.watch(options.patterns, {
+  const watcher = chokidar.watch(options.roots, {
     ignoreInitial: false,
     usePolling: options.usePolling ?? false,
     awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 50 }
@@ -97,6 +102,7 @@ export function watchTranscripts(options: WatchOptions): () => void {
 
   watcher
     .on('add', (path) => {
+      if (!options.match(path)) return;
       if (!ready) {
         void tailer.seekToEnd(path);
         return;
@@ -104,6 +110,7 @@ export function watchTranscripts(options: WatchOptions): () => void {
       void emit(path);
     })
     .on('change', (path) => {
+      if (!options.match(path)) return;
       void emit(path);
     })
     .on('ready', () => {

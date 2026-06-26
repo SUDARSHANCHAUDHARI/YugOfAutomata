@@ -7,8 +7,8 @@ import {
 import type { AdapterContext, SourceAdapter } from './types.js';
 import { watchTranscripts } from './tail.js';
 
-export function claudeGlob(home: string): string {
-  return join(home, '.claude', 'projects', '**', '*.jsonl');
+export function claudeRoot(home: string): string {
+  return join(home, '.claude', 'projects');
 }
 
 const TOOL_ALIASES: Record<string, string> = {
@@ -168,7 +168,8 @@ export const claudeAdapter: SourceAdapter = {
   start(context: AdapterContext): () => void {
     const parsers = new Map<string, ReturnType<typeof createClaudeParser>>();
     return watchTranscripts({
-      patterns: claudeGlob(context.home),
+      roots: claudeRoot(context.home),
+      match: (path) => path.endsWith('.jsonl'),
       activeWindowMs: context.activeWindowMs,
       usePolling: context.usePolling,
       onLines: (path, lines) => {

@@ -1,7 +1,7 @@
 export const SERVER_PORT = 8123;
 export const WS_PATH = '/ws';
 
-export type AgentSourceId = 'codex' | 'claude' | 'opencode' | 'koda' | 'local-llm' | 'demo';
+export type AgentSourceId = 'codex' | 'claude' | 'opencode' | 'local-llm' | 'demo';
 
 export type AutomatonState =
   | 'idle'
@@ -233,7 +233,6 @@ export const DEFAULT_APP_SETTINGS: AppSettings = {
     codex: { enabled: true },
     claude: { enabled: true },
     opencode: { enabled: true },
-    koda: { enabled: true },
     'local-llm': { enabled: true },
     demo: { enabled: true }
   },

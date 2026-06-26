@@ -11,8 +11,7 @@ export const availableAdapters: SourceAdapter[] = [claudeAdapter, codexAdapter, 
 
 /**
  * Pick the adapters to run. With no filter, all available live adapters run.
- * Requested sources that aren't supported live (demo, koda, local-llm) are
- * ignored.
+ * Requested sources that aren't supported live (demo, local-llm) are ignored.
  */
 export function selectAdapters(sources: AgentSourceId[] | undefined): SourceAdapter[] {
   if (!sources || sources.length === 0) return availableAdapters;

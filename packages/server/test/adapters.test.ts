@@ -17,7 +17,7 @@ describe('selectAdapters', () => {
   });
 
   it('ignores unsupported or unknown sources', () => {
-    expect(selectAdapters(['koda', 'demo']).map((a) => a.id)).toEqual([]);
+    expect(selectAdapters(['local-llm', 'demo']).map((a) => a.id)).toEqual([]);
   });
 
   it('exposes the available adapter ids', () => {

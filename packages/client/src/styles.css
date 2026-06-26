@@ -105,6 +105,65 @@ button {
   cursor: pointer;
 }
 
+.city-button.active {
+  border-color: #7c6cfc;
+  background: #222b3c;
+}
+
+.activity-feed {
+  margin-top: 18px;
+  border-top: 1px solid #263241;
+  padding-top: 12px;
+}
+
+.activity-feed h2 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.feed-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.feed-building {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: #273244;
+  color: #cdd6e4;
+}
+
+.feed-tool {
+  font-weight: 700;
+}
+
+.feed-detail {
+  color: #aab5c3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+.feed-city {
+  margin-left: auto;
+  color: #7f8aa0;
+}
+
 .game-frame {
   min-width: 0;
   min-height: 0;

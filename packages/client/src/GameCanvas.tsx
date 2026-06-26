@@ -1,6 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { Application, Container, Graphics, Text } from 'pixi.js';
-import type { AutomatonSnapshot, BuildingId } from '@yug-of-automata/shared';
+import type { AutomatonSnapshot, AutomatonState, BuildingId, WorkerSnapshot } from '@yug-of-automata/shared';
+
+const stateColors: Record<AutomatonState, number> = {
+  idle: 0x8b9bb4,
+  thinking: 0x9fb7ff,
+  working: 0xd8e6ff,
+  'awaiting-input': 0xf2d16b,
+  returning: 0xb88b4a,
+  error: 0xef6f6c,
+  recovering: 0xefc06c
+};
 
 const buildingPositions: Record<BuildingId, { x: number; y: number; label: string; color: number }> = {
   core: { x: 420, y: 260, label: 'Core', color: 0x8b9bb4 },
@@ -19,10 +29,12 @@ const buildingPositions: Record<BuildingId, { x: number; y: number; label: strin
 
 export function GameCanvas({
   automata,
+  workers,
   selectedId,
   onSelect
 }: {
   automata: AutomatonSnapshot[];
+  workers: WorkerSnapshot[];
   selectedId?: string;
   onSelect: (id: string) => void;
 }) {
@@ -67,7 +79,14 @@ export function GameCanvas({
       const y = target.y + Math.sin(angle) * 24;
       drawAutomaton(world, x, y, automaton, automaton.sessionId === selectedId, onSelect);
     });
-  }, [automata, selectedId, onSelect, ready]);
+
+    workers.forEach((worker, index) => {
+      const target = buildingPositions[worker.currentBuilding] ?? buildingPositions.barracks;
+      const x = target.x - 30 + (index % 4) * 18;
+      const y = target.y + 18 + Math.floor(index / 4) * 16;
+      drawWorker(world, x, y);
+    });
+  }, [automata, workers, selectedId, onSelect, ready]);
 
   return <section className="game-frame" ref={hostRef} />;
 }
@@ -99,8 +118,9 @@ function drawAutomaton(
   selected: boolean,
   onSelect: (id: string) => void
 ) {
+  const bodyColor = selected ? 0xf6d36b : stateColors[automaton.state] ?? 0xd8e6ff;
   const marker = new Graphics();
-  marker.circle(x, y, selected ? 15 : 12).fill(selected ? 0xf6d36b : 0xd8e6ff).stroke({ color: 0x0b0f16, width: 3 });
+  marker.circle(x, y, selected ? 15 : 12).fill(bodyColor).stroke({ color: 0x0b0f16, width: 3 });
   marker.rect(x - 5, y - 24, 10, 16).fill(0x9fb7ff);
   marker.eventMode = 'static';
   marker.cursor = 'pointer';
@@ -110,4 +130,13 @@ function drawAutomaton(
   text.anchor.set(0.5);
   text.position.set(x, y);
   stage.addChild(marker, text);
+}
+
+function drawWorker(stage: Container, x: number, y: number) {
+  const marker = new Graphics();
+  marker
+    .poly([x, y - 7, x + 6, y + 5, x - 6, y + 5])
+    .fill(0xc05c7e)
+    .stroke({ color: 0x0b0f16, width: 2 });
+  stage.addChild(marker);
 }

@@ -1,15 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AutomatonSnapshot } from '@yug-of-automata/shared';
+import { ActivityFeed } from './ActivityFeed';
 import { GameCanvas } from './GameCanvas';
 import { useWorld } from './store';
 import { connectWorld } from './ws';
 
 export function App() {
-  const { connected, automata, cities } = useWorld();
+  const { connected, automata, workers, cities, selectedCityId, setSelectedCity } = useWorld();
   const [selectedId, setSelectedId] = useState<string | undefined>();
+
+  const visibleAutomata = useMemo(
+    () => (selectedCityId ? automata.filter((item) => item.cityId === selectedCityId) : automata),
+    [automata, selectedCityId]
+  );
+  const visibleSessionIds = useMemo(
+    () => new Set(visibleAutomata.map((item) => item.sessionId)),
+    [visibleAutomata]
+  );
+  const visibleWorkers = useMemo(
+    () => workers.filter((worker) => visibleSessionIds.has(worker.parentSessionId)),
+    [workers, visibleSessionIds]
+  );
   const selected = useMemo(
-    () => automata.find((item) => item.sessionId === selectedId) ?? automata[0],
-    [automata, selectedId]
+    () => visibleAutomata.find((item) => item.sessionId === selectedId) ?? visibleAutomata[0],
+    [visibleAutomata, selectedId]
   );
 
   useEffect(() => {
@@ -21,7 +35,7 @@ export function App() {
       <header className="topbar">
         <div>
           <h1>Yug of Automata</h1>
-          <p>A local RTS dashboard for your AI coding automata.</p>
+          <p>A local RTS dashboard for your AI coding automata. Runs on 127.0.0.1 — your transcripts never leave this machine.</p>
         </div>
         <div className={connected ? 'status online' : 'status offline'}>
           {connected ? 'Connected' : 'Reconnecting'}
@@ -31,15 +45,34 @@ export function App() {
       <section className="workspace">
         <aside className="city-panel">
           <h2>Cities</h2>
+          <button
+            className={selectedCityId ? 'city-button' : 'city-button active'}
+            type="button"
+            onClick={() => setSelectedCity(undefined)}
+          >
+            <span>All cities</span>
+            <strong>{automata.length}</strong>
+          </button>
           {cities.map((city) => (
-            <button key={city.cityId} className="city-button" type="button">
+            <button
+              key={city.cityId}
+              className={selectedCityId === city.cityId ? 'city-button active' : 'city-button'}
+              type="button"
+              onClick={() => setSelectedCity(city.cityId)}
+            >
               <span>{city.name}</span>
               <strong>{city.activeAutomata}</strong>
             </button>
           ))}
+          <ActivityFeed automata={visibleAutomata} />
         </aside>
 
-        <GameCanvas automata={automata} selectedId={selected?.sessionId} onSelect={setSelectedId} />
+        <GameCanvas
+          automata={visibleAutomata}
+          workers={visibleWorkers}
+          selectedId={selected?.sessionId}
+          onSelect={setSelectedId}
+        />
 
         <aside className="detail-panel">
           <SessionPanel automaton={selected} />

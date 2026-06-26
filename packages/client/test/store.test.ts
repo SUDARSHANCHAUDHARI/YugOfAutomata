@@ -38,4 +38,43 @@ describe('applyWorldEvent', () => {
     expect(next.automata).toHaveLength(1);
     expect(next.automata[0].title).toBe('Build');
   });
+
+  it('removes an automaton and its workers on automaton-removed', () => {
+    const seeded = {
+      ...createInitialWorldState(),
+      automata: [
+        {
+          sessionId: 'a1',
+          source: 'demo' as const,
+          title: 'Build',
+          cityId: 'c1',
+          cityName: 'City',
+          state: 'working' as const,
+          currentBuilding: 'forge' as const,
+          tokens: { input: 1, output: 2 },
+          recentActions: [],
+          startedAt: 't',
+          lastActivityAt: 't'
+        }
+      ],
+      workers: [
+        { workerId: 'w1', parentSessionId: 'a1', title: 'sub', state: 'working' as const, currentBuilding: 'barracks' as const }
+      ]
+    };
+
+    const next = applyWorldEvent(seeded, { type: 'automaton-removed', sessionId: 'a1' });
+    expect(next.automata).toHaveLength(0);
+    expect(next.workers).toHaveLength(0);
+  });
+
+  it('removes a worker on worker-removed', () => {
+    const seeded = {
+      ...createInitialWorldState(),
+      workers: [
+        { workerId: 'w1', parentSessionId: 'a1', title: 'sub', state: 'working' as const, currentBuilding: 'barracks' as const }
+      ]
+    };
+    const next = applyWorldEvent(seeded, { type: 'worker-removed', workerId: 'w1' });
+    expect(next.workers).toHaveLength(0);
+  });
 });

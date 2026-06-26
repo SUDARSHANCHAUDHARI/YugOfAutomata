@@ -85,7 +85,9 @@ export interface WorldSnapshot {
 export type WorldEvent =
   | ({ type: 'snapshot' } & WorldSnapshot)
   | { type: 'automaton-updated'; automaton: AutomatonSnapshot }
+  | { type: 'automaton-removed'; sessionId: string }
   | { type: 'worker-updated'; worker: WorkerSnapshot }
+  | { type: 'worker-removed'; workerId: string }
   | { type: 'city-updated'; city: CitySnapshot };
 
 export type MappingRule =

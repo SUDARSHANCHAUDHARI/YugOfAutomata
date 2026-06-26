@@ -11,7 +11,7 @@ export interface CliOptions {
   proxyUpstream?: string;
 }
 
-const validSources = new Set<AgentSourceId>(['codex', 'claude', 'opencode', 'koda', 'local-llm', 'demo']);
+const validSources = new Set<AgentSourceId>(['codex', 'claude', 'opencode', 'local-llm', 'demo']);
 
 export function parseArgs(argv: string[]): CliOptions {
   const options: CliOptions = { demo: false, open: false, proxy: false };

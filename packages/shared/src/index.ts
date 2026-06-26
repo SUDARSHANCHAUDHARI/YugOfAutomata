@@ -26,11 +26,20 @@ export type BuildingId =
   | 'infirmary'
   | 'storehouse';
 
+export const RECENT_ACTIONS_CAP = 8;
+
 export interface ActionEntry {
   tool: string;
   detail?: string;
   building: BuildingId;
   ts: string;
+}
+
+export interface TokenUsage {
+  input: number;
+  output: number;
+  context?: number;
+  contextWindow?: number;
 }
 
 export interface AutomatonSnapshot {
@@ -45,12 +54,7 @@ export interface AutomatonSnapshot {
   currentTool?: string;
   toolDetail?: string;
   currentBuilding: BuildingId;
-  tokens: {
-    input: number;
-    output: number;
-    context?: number;
-    contextWindow?: number;
-  };
+  tokens: TokenUsage;
   recentActions: ActionEntry[];
   startedAt: string;
   lastActivityAt: string;
@@ -148,3 +152,73 @@ export function resolveBuilding(
 
   return mapping.fallback;
 }
+
+/**
+ * A normalized activity signal emitted by a source adapter. Adapters translate
+ * source-specific transcript lines into these partial observations; the world
+ * state machine merges them into automata and workers.
+ */
+export interface AdapterObservation {
+  source: AgentSourceId;
+  sessionId: string;
+  ts: string;
+  cwd?: string;
+  gitBranch?: string;
+  model?: string;
+  title?: string;
+  tool?: string;
+  toolDetail?: string;
+  state?: AutomatonState;
+  isError?: boolean;
+  tokens?: Partial<TokenUsage>;
+  worker?: { id: string; title?: string; state?: AutomatonState };
+}
+
+export interface SourceSettings {
+  enabled: boolean;
+}
+
+export interface AppSettings {
+  theme: 'dark' | 'light';
+  sources: Record<AgentSourceId, SourceSettings>;
+  mapping: BuildingMapping;
+}
+
+interface ModelWindow {
+  match: string;
+  window: number;
+}
+
+const DEFAULT_CONTEXT_WINDOW = 200000;
+
+export const MODEL_CONTEXT_WINDOWS: ModelWindow[] = [
+  { match: 'gpt-5', window: 272000 },
+  { match: 'gpt-4.1', window: 1000000 },
+  { match: 'o3', window: 200000 },
+  { match: 'sonnet', window: 200000 },
+  { match: 'opus', window: 200000 },
+  { match: 'haiku', window: 200000 },
+  { match: 'claude', window: 200000 }
+];
+
+export function contextWindowForModel(model?: string): number {
+  if (!model) return DEFAULT_CONTEXT_WINDOW;
+  const normalized = model.toLowerCase();
+  for (const entry of MODEL_CONTEXT_WINDOWS) {
+    if (normalized.includes(entry.match)) return entry.window;
+  }
+  return DEFAULT_CONTEXT_WINDOW;
+}
+
+export const DEFAULT_APP_SETTINGS: AppSettings = {
+  theme: 'dark',
+  sources: {
+    codex: { enabled: true },
+    claude: { enabled: true },
+    opencode: { enabled: true },
+    koda: { enabled: true },
+    'local-llm': { enabled: true },
+    demo: { enabled: true }
+  },
+  mapping: DEFAULT_BUILDING_MAPPING
+};

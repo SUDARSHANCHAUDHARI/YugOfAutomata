@@ -8,10 +8,15 @@ export { parseArgs } from './args.js';
 
 async function main() {
   const options = parseArgs(process.argv.slice(2));
-  const server = await startServer({ demo: options.demo });
+  const server = await startServer({
+    demo: options.demo,
+    sources: options.sources,
+    port: options.port,
+    host: options.host
+  });
   console.log(`Yug of Automata: ${server.url}`);
   console.log(`Mode: ${options.demo ? 'demo' : 'live'}`);
-  if (options.sources?.length) console.log(`Sources: ${options.sources.join(', ')}`);
+  if (!options.demo) console.log(`Sources: ${server.sources.join(', ') || 'none active'}`);
   if (options.open) openBrowser(server.url);
 }
 

@@ -26,6 +26,21 @@ export type BuildingId =
   | 'infirmary'
   | 'storehouse';
 
+export const BUILDING_IDS: BuildingId[] = [
+  'core',
+  'forge',
+  'archive',
+  'mine',
+  'observatory',
+  'guildhall',
+  'caravan',
+  'workshop',
+  'barracks',
+  'shrine',
+  'infirmary',
+  'storehouse'
+];
+
 export const RECENT_ACTIONS_CAP = 8;
 
 export interface ActionEntry {

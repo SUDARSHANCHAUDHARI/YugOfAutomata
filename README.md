@@ -27,9 +27,17 @@ yoa --sources claude      # only watch Claude Code
 yoa --sources codex,claude
 yoa --open                # open the dashboard in your browser
 yoa --port 9000           # bind a different port
+yoa --proxy               # also run the local-LLM logging proxy
 ```
 
 The CLI binds to `127.0.0.1` and prints one URL. Open it to see the city.
+
+### Local-LLM proxy
+
+`yoa --proxy` starts an OpenAI-compatible logging proxy (default `127.0.0.1:8124`)
+that forwards to a local upstream (default Ollama at `127.0.0.1:11434`) and shows
+that traffic as a `local-llm` automaton. Point your client's OpenAI base URL at
+the proxy (`http://127.0.0.1:8124/v1`). See [docs/local-llm.md](docs/local-llm.md).
 
 ## What you see
 

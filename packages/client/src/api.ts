@@ -1,4 +1,17 @@
-import type { AppSettings, BuildingMapping } from '@yug-of-automata/shared';
+import type { AppSettings, BuildingId, BuildingMapping } from '@yug-of-automata/shared';
+
+export interface BuildingStats {
+  current: Partial<Record<BuildingId, number>>;
+  day: Partial<Record<BuildingId, number>>;
+  week: Partial<Record<BuildingId, number>>;
+  month: Partial<Record<BuildingId, number>>;
+}
+
+export async function getBuildingStats(): Promise<BuildingStats> {
+  const response = await fetch('/building-stats');
+  if (!response.ok) throw new Error(`getBuildingStats failed: ${response.status}`);
+  return (await response.json()) as BuildingStats;
+}
 
 export async function getSettings(): Promise<AppSettings> {
   const response = await fetch('/settings');

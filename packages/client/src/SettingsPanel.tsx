@@ -1,12 +1,15 @@
-import type { AgentSourceId, AppSettings } from '@yug-of-automata/shared';
+import { useState } from 'react';
+import { BUILDING_IDS, type AgentSourceId, type AppSettings, type BuildingId } from '@yug-of-automata/shared';
 import { putSettings } from './api';
-import { toggleSourceEnabled, useWorld } from './store';
+import { addExactRule, removeRuleAt, toggleSourceEnabled, useWorld } from './store';
 
-const LIVE_SOURCES: AgentSourceId[] = ['claude', 'codex'];
+const LIVE_SOURCES: AgentSourceId[] = ['claude', 'codex', 'opencode'];
 
 export function SettingsPanel({ onClose }: { onClose: () => void }) {
   const settings = useWorld((state) => state.settings);
   const setSettings = useWorld((state) => state.setSettings);
+  const [newTool, setNewTool] = useState('');
+  const [newBuilding, setNewBuilding] = useState<BuildingId>('forge');
 
   if (!settings) {
     return (
@@ -28,6 +31,15 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
     } catch {
       // Keep optimistic state; the server is local and will retry on next change.
     }
+  };
+
+  const setMapping = (mapping: AppSettings['mapping']) => persist({ ...settings, mapping });
+
+  const onAddRule = () => {
+    const next = addExactRule(settings.mapping, newTool, newBuilding);
+    if (next === settings.mapping) return;
+    setNewTool('');
+    void setMapping(next);
   };
 
   return (
@@ -82,9 +94,35 @@ export function SettingsPanel({ onClose }: { onClose: () => void }) {
               </code>
               <span className="arrow">→</span>
               <span className={`feed-building b-${rule.building}`}>{rule.building}</span>
+              <button
+                type="button"
+                className="rule-remove"
+                aria-label={`Remove rule ${index + 1}`}
+                onClick={() => void setMapping(removeRuleAt(settings.mapping, index))}
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>
+
+        <div className="rule-add">
+          <input
+            type="text"
+            placeholder="tool name (e.g. jest)"
+            value={newTool}
+            onChange={(event) => setNewTool(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') onAddRule();
+            }}
+          />
+          <select value={newBuilding} onChange={(event) => setNewBuilding(event.target.value as BuildingId)}>
+            {BUILDING_IDS.map((id) => (
+              <option key={id} value={id}>{id}</option>
+            ))}
+          </select>
+          <button type="button" className="ghost" onClick={onAddRule}>Add</button>
+        </div>
         <p className="muted">Fallback: {settings.mapping.fallback}</p>
       </section>
     </div>

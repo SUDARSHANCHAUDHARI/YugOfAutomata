@@ -23,4 +23,17 @@ describe('parseArgs', () => {
   it('ignores a non-numeric port', () => {
     expect(parseArgs(['--port', 'abc']).port).toBeUndefined();
   });
+
+  it('enables the local-LLM proxy via flag or subcommand', () => {
+    expect(parseArgs(['--proxy']).proxy).toBe(true);
+    expect(parseArgs(['local-proxy']).proxy).toBe(true);
+    expect(parseArgs([]).proxy).toBe(false);
+  });
+
+  it('parses proxy port and upstream (implying --proxy)', () => {
+    const options = parseArgs(['--proxy-port', '9999', '--proxy-upstream', 'http://127.0.0.1:1234']);
+    expect(options.proxy).toBe(true);
+    expect(options.proxyPort).toBe(9999);
+    expect(options.proxyUpstream).toBe('http://127.0.0.1:1234');
+  });
 });

@@ -1,0 +1,9 @@
+{"type":"session_meta","timestamp":"2026-06-26T00:00:00.000Z","payload":{"id":"codex-sess","cwd":"/Users/dev/Tooling","cli_version":"0.122.0","model_provider":"openai"}}
+{"type":"turn_context","timestamp":"2026-06-26T00:00:00.500Z","payload":{"model":"gpt-5.4","cwd":"/Users/dev/Tooling","approval_policy":"on-request"}}
+{"type":"event_msg","timestamp":"2026-06-26T00:00:01.000Z","payload":{"type":"task_started"}}
+{"type":"event_msg","timestamp":"2026-06-26T00:00:01.500Z","payload":{"type":"user_message","message":"Refactor the parser"}}
+{"type":"response_item","timestamp":"2026-06-26T00:00:02.000Z","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":\"git push origin main\",\"workdir\":\"/Users/dev/Tooling\"}","call_id":"c1"}}
+{"type":"response_item","timestamp":"2026-06-26T00:00:02.500Z","payload":{"type":"function_call","name":"exec_command","arguments":"{\"cmd\":[\"ls\",\"-la\"]}","call_id":"c2"}}
+{"type":"event_msg","timestamp":"2026-06-26T00:00:03.000Z","payload":{"type":"token_count","info":{"total_token_usage":{"input_tokens":1000,"output_tokens":300,"total_tokens":1300},"last_token_usage":{"total_tokens":1300},"model_context_window":272000},"rate_limits":{"primary":{"used_percent":40.0}}}}
+{"type":"event_msg","timestamp":"2026-06-26T00:00:03.500Z","payload":{"type":"token_count","info":null,"rate_limits":{"primary":{"used_percent":74.0,"window_minutes":300}}}}
+{"type":"event_msg","timestamp":"2026-06-26T00:00:04.000Z","payload":{"type":"task_complete"}}

@@ -13,6 +13,7 @@ import {
 } from '@yug-of-automata/shared';
 import { selectAdapters } from './adapters/index.js';
 import { startDemoWorld } from './demo.js';
+import { startLocalProxy } from './proxy.js';
 import { loadSettings, saveSettings, settingsDir } from './settings.js';
 import { StatsStore } from './stats.js';
 import { registerStatic, resolveClientDir } from './static.js';
@@ -27,16 +28,20 @@ export interface StartServerOptions {
   activeWindowMs?: number;
   configDir?: string;
   usePolling?: boolean;
+  proxy?: { port?: number; upstream?: string };
 }
 
 export interface RunningServer {
   url: string;
   port: number;
   sources: AgentSourceId[];
+  proxyUrl?: string;
   close: () => Promise<void>;
 }
 
 const DEFAULT_ACTIVE_WINDOW_MS = 5 * 60 * 1000;
+const DEFAULT_PROXY_PORT = 8124;
+const DEFAULT_PROXY_UPSTREAM = 'http://127.0.0.1:11434';
 
 function buildingStats(snapshot: WorldSnapshot): Record<string, number> {
   const counts: Partial<Record<BuildingId, number>> = {};
@@ -151,10 +156,26 @@ export async function startServer(options: StartServerOptions): Promise<RunningS
     stops.push(() => clearInterval(pruneTimer));
   }
 
+  let proxyUrl: string | undefined;
+  if (options.proxy && !options.demo) {
+    const proxy = await startLocalProxy({
+      world,
+      host,
+      port: options.proxy.port ?? DEFAULT_PROXY_PORT,
+      upstream: options.proxy.upstream ?? DEFAULT_PROXY_UPSTREAM
+    });
+    proxyUrl = `http://${host}:${proxy.port}`;
+    if (!activeSources.includes('local-llm')) activeSources.push('local-llm');
+    stops.push(() => {
+      void proxy.close();
+    });
+  }
+
   return {
     url,
     port: actualPort,
     sources: activeSources,
+    proxyUrl,
     close: async () => {
       for (const stop of stops) stop();
       offWorld();

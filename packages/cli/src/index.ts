@@ -12,11 +12,13 @@ async function main() {
     demo: options.demo,
     sources: options.sources,
     port: options.port,
-    host: options.host
+    host: options.host,
+    proxy: options.proxy ? { port: options.proxyPort, upstream: options.proxyUpstream } : undefined
   });
   console.log(`Yug of Automata: ${server.url}`);
   console.log(`Mode: ${options.demo ? 'demo' : 'live'}`);
   if (!options.demo) console.log(`Sources: ${server.sources.join(', ') || 'none active'}`);
+  if (server.proxyUrl) console.log(`Local-LLM proxy: ${server.proxyUrl}`);
   if (options.open) openBrowser(server.url);
 }
 

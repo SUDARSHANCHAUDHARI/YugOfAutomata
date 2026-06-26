@@ -4,6 +4,8 @@ export interface CliOptions {
   demo: boolean;
   open: boolean;
   sources?: AgentSourceId[];
+  port?: number;
+  host?: string;
 }
 
 const validSources = new Set<AgentSourceId>(['codex', 'claude', 'opencode', 'koda', 'local-llm', 'demo']);
@@ -21,6 +23,13 @@ export function parseArgs(argv: string[]): CliOptions {
         .split(',')
         .map((value) => value.trim())
         .filter((value): value is AgentSourceId => validSources.has(value as AgentSourceId));
+    } else if (arg === '--port') {
+      const value = Number(argv[index + 1]);
+      index += 1;
+      if (Number.isInteger(value)) options.port = value;
+    } else if (arg === '--host') {
+      options.host = argv[index + 1];
+      index += 1;
     }
   }
   return options;

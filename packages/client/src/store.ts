@@ -1,17 +1,40 @@
 import { create } from 'zustand';
-import type { AutomatonSnapshot, CitySnapshot, WorkerSnapshot, WorldEvent } from '@yug-of-automata/shared';
+import type {
+  AgentSourceId,
+  AppSettings,
+  AutomatonSnapshot,
+  CitySnapshot,
+  WorkerSnapshot,
+  WorldEvent
+} from '@yug-of-automata/shared';
+
+export function toggleSourceEnabled(settings: AppSettings, id: AgentSourceId): AppSettings {
+  return {
+    ...settings,
+    sources: {
+      ...settings.sources,
+      [id]: { enabled: !settings.sources[id]?.enabled }
+    }
+  };
+}
 
 export interface WorldState {
   connected: boolean;
   automata: AutomatonSnapshot[];
   workers: WorkerSnapshot[];
   cities: CitySnapshot[];
+  selectedCityId?: string;
+  settings?: AppSettings;
   updatedAt?: string;
   setConnected: (connected: boolean) => void;
+  setSelectedCity: (cityId?: string) => void;
+  setSettings: (settings: AppSettings) => void;
   apply: (event: WorldEvent) => void;
 }
 
-export function createInitialWorldState(): Omit<WorldState, 'setConnected' | 'apply'> {
+type WorldSlice = Omit<WorldState, 'setConnected' | 'setSelectedCity' | 'setSettings' | 'apply'>;
+
+export function createInitialWorldState(): WorldSlice {
   return {
     connected: false,
     automata: [],
@@ -20,10 +43,7 @@ export function createInitialWorldState(): Omit<WorldState, 'setConnected' | 'ap
   };
 }
 
-export function applyWorldEvent(
-  state: Omit<WorldState, 'setConnected' | 'apply'>,
-  event: WorldEvent
-): Omit<WorldState, 'setConnected' | 'apply'> {
+export function applyWorldEvent(state: WorldSlice, event: WorldEvent): WorldSlice {
   if (event.type === 'snapshot') {
     return {
       ...state,
@@ -39,10 +59,23 @@ export function applyWorldEvent(
       automata: upsertBy(state.automata, event.automaton, (item) => item.sessionId)
     };
   }
+  if (event.type === 'automaton-removed') {
+    return {
+      ...state,
+      automata: state.automata.filter((item) => item.sessionId !== event.sessionId),
+      workers: state.workers.filter((item) => item.parentSessionId !== event.sessionId)
+    };
+  }
   if (event.type === 'worker-updated') {
     return {
       ...state,
       workers: upsertBy(state.workers, event.worker, (item) => item.workerId)
+    };
+  }
+  if (event.type === 'worker-removed') {
+    return {
+      ...state,
+      workers: state.workers.filter((item) => item.workerId !== event.workerId)
     };
   }
   if (event.type === 'city-updated') {
@@ -63,5 +96,7 @@ function upsertBy<T>(items: T[], next: T, key: (item: T) => string): T[] {
 export const useWorld = create<WorldState>((set) => ({
   ...createInitialWorldState(),
   setConnected: (connected) => set({ connected }),
+  setSelectedCity: (selectedCityId) => set({ selectedCityId }),
+  setSettings: (settings) => set({ settings }),
   apply: (event) => set((state) => applyWorldEvent(state, event))
 }));

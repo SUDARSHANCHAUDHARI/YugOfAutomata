@@ -1,5 +1,5 @@
 {
-  "name": "yug-of-automata",
+  "name": "yug-of-automata-workspace",
   "version": "0.1.0",
   "description": "A local RTS dashboard for your AI coding automata.",
   "type": "module",
@@ -13,8 +13,9 @@
   "scripts": {
     "dev": "pnpm --filter @yug-of-automata/server dev -- --demo & pnpm --filter @yug-of-automata/client dev",
     "demo": "pnpm --filter @yug-of-automata/server dev -- --demo & pnpm --filter @yug-of-automata/client dev",
-    "build": "pnpm --filter @yug-of-automata/shared build && pnpm --filter @yug-of-automata/server build && pnpm --filter @yug-of-automata/client build && pnpm --filter @yug-of-automata/cli build",
-    "test": "pnpm --filter @yug-of-automata/shared build && pnpm --filter @yug-of-automata/shared test && pnpm --filter @yug-of-automata/server test && pnpm --filter @yug-of-automata/client test && pnpm --filter @yug-of-automata/cli test",
+    "start": "node packages/cli/dist/index.js",
+    "build": "pnpm --filter @yug-of-automata/shared build && pnpm --filter @yug-of-automata/server build && pnpm --filter @yug-of-automata/client build && node scripts/build-release.mjs",
+    "test": "pnpm --filter @yug-of-automata/shared build && pnpm --filter @yug-of-automata/shared test && pnpm --filter @yug-of-automata/server test && pnpm --filter @yug-of-automata/client test && pnpm --filter yug-of-automata test",
     "typecheck": "pnpm -r --if-present typecheck"
   },
   "engines": {
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
+    "esbuild": "^0.28.1",
     "typescript": "^5.7.0",
     "vitest": "^3.2.0"
   }

@@ -1,5 +1,22 @@
 import { create } from 'zustand';
-import type { AutomatonSnapshot, CitySnapshot, WorkerSnapshot, WorldEvent } from '@yug-of-automata/shared';
+import type {
+  AgentSourceId,
+  AppSettings,
+  AutomatonSnapshot,
+  CitySnapshot,
+  WorkerSnapshot,
+  WorldEvent
+} from '@yug-of-automata/shared';
+
+export function toggleSourceEnabled(settings: AppSettings, id: AgentSourceId): AppSettings {
+  return {
+    ...settings,
+    sources: {
+      ...settings.sources,
+      [id]: { enabled: !settings.sources[id]?.enabled }
+    }
+  };
+}
 
 export interface WorldState {
   connected: boolean;
@@ -7,13 +24,15 @@ export interface WorldState {
   workers: WorkerSnapshot[];
   cities: CitySnapshot[];
   selectedCityId?: string;
+  settings?: AppSettings;
   updatedAt?: string;
   setConnected: (connected: boolean) => void;
   setSelectedCity: (cityId?: string) => void;
+  setSettings: (settings: AppSettings) => void;
   apply: (event: WorldEvent) => void;
 }
 
-type WorldSlice = Omit<WorldState, 'setConnected' | 'setSelectedCity' | 'apply'>;
+type WorldSlice = Omit<WorldState, 'setConnected' | 'setSelectedCity' | 'setSettings' | 'apply'>;
 
 export function createInitialWorldState(): WorldSlice {
   return {
@@ -78,5 +97,6 @@ export const useWorld = create<WorldState>((set) => ({
   ...createInitialWorldState(),
   setConnected: (connected) => set({ connected }),
   setSelectedCity: (selectedCityId) => set({ selectedCityId }),
+  setSettings: (settings) => set({ settings }),
   apply: (event) => set((state) => applyWorldEvent(state, event))
 }));

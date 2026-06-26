@@ -2,12 +2,18 @@ import { useEffect, useMemo, useState } from 'react';
 import type { AutomatonSnapshot } from '@yug-of-automata/shared';
 import { ActivityFeed } from './ActivityFeed';
 import { GameCanvas } from './GameCanvas';
+import { SettingsPanel } from './SettingsPanel';
+import { getSettings } from './api';
 import { useWorld } from './store';
 import { connectWorld } from './ws';
 
 export function App() {
   const { connected, automata, workers, cities, selectedCityId, setSelectedCity } = useWorld();
+  const settings = useWorld((state) => state.settings);
+  const setSettings = useWorld((state) => state.setSettings);
   const [selectedId, setSelectedId] = useState<string | undefined>();
+  const [showSettings, setShowSettings] = useState(false);
+  const theme = settings?.theme ?? 'dark';
 
   const visibleAutomata = useMemo(
     () => (selectedCityId ? automata.filter((item) => item.cityId === selectedCityId) : automata),
@@ -28,19 +34,29 @@ export function App() {
 
   useEffect(() => {
     connectWorld();
-  }, []);
+    getSettings()
+      .then(setSettings)
+      .catch(() => undefined);
+  }, [setSettings]);
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell theme-${theme}`}>
       <header className="topbar">
         <div>
           <h1>Yug of Automata</h1>
           <p>A local RTS dashboard for your AI coding automata. Runs on 127.0.0.1 — your transcripts never leave this machine.</p>
         </div>
-        <div className={connected ? 'status online' : 'status offline'}>
-          {connected ? 'Connected' : 'Reconnecting'}
+        <div className="topbar-actions">
+          <div className={connected ? 'status online' : 'status offline'}>
+            {connected ? 'Connected' : 'Reconnecting'}
+          </div>
+          <button type="button" className="ghost" onClick={() => setShowSettings((value) => !value)}>
+            Settings
+          </button>
         </div>
       </header>
+
+      {showSettings ? <SettingsPanel onClose={() => setShowSettings(false)} /> : null}
 
       <section className="workspace">
         <aside className="city-panel">

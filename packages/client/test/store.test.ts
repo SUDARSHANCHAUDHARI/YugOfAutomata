@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import type { WorldEvent } from '@yug-of-automata/shared';
-import { applyWorldEvent, createInitialWorldState } from '../src/store.js';
+import { DEFAULT_APP_SETTINGS, type WorldEvent } from '@yug-of-automata/shared';
+import { applyWorldEvent, createInitialWorldState, toggleSourceEnabled } from '../src/store.js';
+
+describe('toggleSourceEnabled', () => {
+  it('flips a source enabled flag without mutating the input', () => {
+    const next = toggleSourceEnabled(DEFAULT_APP_SETTINGS, 'codex');
+    expect(next.sources.codex.enabled).toBe(false);
+    expect(DEFAULT_APP_SETTINGS.sources.codex.enabled).toBe(true);
+    expect(next.sources.claude.enabled).toBe(true);
+  });
+});
 
 describe('applyWorldEvent', () => {
   it('replaces state on snapshot', () => {

@@ -1,5 +1,5 @@
 import chokidar from 'chokidar';
-import { open, stat } from 'node:fs/promises';
+import { open, readFile, stat } from 'node:fs/promises';
 
 /**
  * Tracks a byte offset per file and returns only complete lines appended since
@@ -115,6 +115,54 @@ export function watchTranscripts(options: WatchOptions): () => void {
     })
     .on('ready', () => {
       ready = true;
+    });
+
+  return () => {
+    void watcher.close();
+  };
+}
+
+export interface WatchFilesOptions {
+  /** Root director(ies) to watch recursively. */
+  roots: string | string[];
+  /** Returns true for files to read (e.g. `*.json`). */
+  match: (path: string) => boolean;
+  /** Files whose mtime is older than this are ignored. */
+  activeWindowMs: number;
+  usePolling?: boolean;
+  onFile: (path: string, contents: string) => void;
+}
+
+/**
+ * Watches a directory tree and reads whole files when they are created or
+ * changed, for sources that store activity as many small per-event JSON files
+ * (e.g. OpenCode). Files present at startup are ignored (no history backfill);
+ * inactive files are skipped by mtime.
+ */
+export function watchFiles(options: WatchFilesOptions): () => void {
+  const emit = async (path: string): Promise<void> => {
+    try {
+      const info = await stat(path);
+      if (Date.now() - info.mtimeMs > options.activeWindowMs) return;
+      const contents = await readFile(path, 'utf8');
+      options.onFile(path, contents);
+    } catch {
+      // File vanished or unreadable; ignore.
+    }
+  };
+
+  const watcher = chokidar.watch(options.roots, {
+    ignoreInitial: true,
+    usePolling: options.usePolling ?? false,
+    awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 50 }
+  });
+
+  watcher
+    .on('add', (path) => {
+      if (options.match(path)) void emit(path);
+    })
+    .on('change', (path) => {
+      if (options.match(path)) void emit(path);
     });
 
   return () => {

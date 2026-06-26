@@ -21,6 +21,7 @@ Yug of Automata is local-first by design.
 | --- | --- |
 | Claude Code | `~/.claude/projects/**/*.jsonl` |
 | Codex | `~/.codex/sessions/**/*.jsonl` |
+| OpenCode | `~/.local/share/opencode/storage/{session,message,part}` |
 
 Only files modified within the active window are read, and only the bytes
 appended since the last read.

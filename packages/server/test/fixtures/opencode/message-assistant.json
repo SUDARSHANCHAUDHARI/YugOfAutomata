@@ -1,0 +1,1 @@
+{"id":"msg_a","sessionID":"ses_main","role":"assistant","time":{"created":1770358979652},"providerID":"ollama","modelID":"glm-4.7-flash:latest","path":{"cwd":"/Users/dev/Widget","root":"/"},"cost":0,"tokens":{"input":1200,"output":300,"reasoning":0,"cache":{"read":8000,"write":500}}}

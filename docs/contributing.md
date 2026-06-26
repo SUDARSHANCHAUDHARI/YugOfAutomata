@@ -39,7 +39,12 @@ npm publish                   # publishes yug-of-automata (bin: yoa)
 The published package bundles the server and shared code into a single file and
 ships the built client in `dist/public`, so it has no workspace dependencies.
 
-## CI
+## Before opening a PR
 
-GitHub Actions runs install, typecheck, test, and build on Node 22 for every push
-and pull request (`.github/workflows/ci.yml`).
+Run the checks locally on Node 22:
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm build
+```

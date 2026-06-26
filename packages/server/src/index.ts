@@ -9,3 +9,4 @@ const server = await startServer({ port: SERVER_PORT, demo });
 
 console.log(`Yug of Automata server: ${server.url}`);
 console.log(`Mode: ${demo ? 'demo' : 'live'}`);
+if (!demo) console.log(`Sources: ${server.sources.join(', ') || 'none active'}`);

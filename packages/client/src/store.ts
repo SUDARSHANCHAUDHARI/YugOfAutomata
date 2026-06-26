@@ -3,6 +3,8 @@ import type {
   AgentSourceId,
   AppSettings,
   AutomatonSnapshot,
+  BuildingId,
+  BuildingMapping,
   CitySnapshot,
   WorkerSnapshot,
   WorldEvent
@@ -16,6 +18,24 @@ export function toggleSourceEnabled(settings: AppSettings, id: AgentSourceId): A
       [id]: { enabled: !settings.sources[id]?.enabled }
     }
   };
+}
+
+export function addExactRule(
+  mapping: BuildingMapping,
+  tool: string,
+  building: BuildingId
+): BuildingMapping {
+  const trimmed = tool.trim();
+  if (!trimmed) return mapping;
+  // Replace any existing exact rule for the same tool, then prepend the new one.
+  const rules = mapping.rules.filter(
+    (rule) => !(rule.kind === 'exact' && rule.tool === trimmed)
+  );
+  return { ...mapping, rules: [{ kind: 'exact', tool: trimmed, building }, ...rules] };
+}
+
+export function removeRuleAt(mapping: BuildingMapping, index: number): BuildingMapping {
+  return { ...mapping, rules: mapping.rules.filter((_, i) => i !== index) };
 }
 
 export interface WorldState {

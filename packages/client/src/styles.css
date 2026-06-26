@@ -384,3 +384,43 @@ button {
 .theme-light h3 {
   color: #1c2230;
 }
+
+/* Mapping editor controls */
+.rule-remove {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: #8a93a6;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+}
+
+.rule-remove:hover {
+  color: #ef6f6c;
+}
+
+.rule-add {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.rule-add input {
+  flex: 1;
+  min-width: 0;
+  background: #11131c;
+  border: 1px solid #2d3a4b;
+  border-radius: 6px;
+  color: inherit;
+  padding: 6px 8px;
+}
+
+.rule-add select {
+  background: #11131c;
+  border: 1px solid #2d3a4b;
+  border-radius: 6px;
+  color: inherit;
+  padding: 6px 4px;
+}

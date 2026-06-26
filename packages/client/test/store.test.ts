@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
-import { DEFAULT_APP_SETTINGS, type WorldEvent } from '@yug-of-automata/shared';
-import { applyWorldEvent, createInitialWorldState, toggleSourceEnabled } from '../src/store.js';
+import {
+  DEFAULT_APP_SETTINGS,
+  DEFAULT_BUILDING_MAPPING,
+  type WorldEvent
+} from '@yug-of-automata/shared';
+import {
+  addExactRule,
+  applyWorldEvent,
+  createInitialWorldState,
+  removeRuleAt,
+  toggleSourceEnabled
+} from '../src/store.js';
 
 describe('toggleSourceEnabled', () => {
   it('flips a source enabled flag without mutating the input', () => {
@@ -8,6 +18,32 @@ describe('toggleSourceEnabled', () => {
     expect(next.sources.codex.enabled).toBe(false);
     expect(DEFAULT_APP_SETTINGS.sources.codex.enabled).toBe(true);
     expect(next.sources.claude.enabled).toBe(true);
+  });
+});
+
+describe('mapping editor helpers', () => {
+  it('adds an exact rule at the front', () => {
+    const next = addExactRule(DEFAULT_BUILDING_MAPPING, 'jest', 'workshop');
+    expect(next.rules[0]).toEqual({ kind: 'exact', tool: 'jest', building: 'workshop' });
+    expect(DEFAULT_BUILDING_MAPPING.rules).not.toContainEqual({ kind: 'exact', tool: 'jest', building: 'workshop' });
+  });
+
+  it('replaces an existing exact rule for the same tool', () => {
+    const once = addExactRule(DEFAULT_BUILDING_MAPPING, 'jest', 'workshop');
+    const twice = addExactRule(once, 'jest', 'archive');
+    const jestRules = twice.rules.filter((r) => r.kind === 'exact' && r.tool === 'jest');
+    expect(jestRules).toHaveLength(1);
+    expect(jestRules[0]).toMatchObject({ building: 'archive' });
+  });
+
+  it('ignores a blank tool', () => {
+    expect(addExactRule(DEFAULT_BUILDING_MAPPING, '   ', 'forge')).toEqual(DEFAULT_BUILDING_MAPPING);
+  });
+
+  it('removes a rule by index', () => {
+    const next = removeRuleAt(DEFAULT_BUILDING_MAPPING, 0);
+    expect(next.rules).toHaveLength(DEFAULT_BUILDING_MAPPING.rules.length - 1);
+    expect(next.rules[0]).toEqual(DEFAULT_BUILDING_MAPPING.rules[1]);
   });
 });
 

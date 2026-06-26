@@ -12,11 +12,15 @@ describe('selectAdapters', () => {
     expect(selectAdapters(['codex']).map((a) => a.id)).toEqual(['codex']);
   });
 
+  it('filters to opencode when requested', () => {
+    expect(selectAdapters(['opencode']).map((a) => a.id)).toEqual(['opencode']);
+  });
+
   it('ignores unsupported or unknown sources', () => {
-    expect(selectAdapters(['opencode', 'koda', 'demo']).map((a) => a.id)).toEqual([]);
+    expect(selectAdapters(['koda', 'demo']).map((a) => a.id)).toEqual([]);
   });
 
   it('exposes the available adapter ids', () => {
-    expect(availableAdapters.map((a) => a.id).sort()).toEqual(['claude', 'codex']);
+    expect(availableAdapters.map((a) => a.id).sort()).toEqual(['claude', 'codex', 'opencode']);
   });
 });

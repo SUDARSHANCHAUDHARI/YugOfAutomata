@@ -1,0 +1,1 @@
+{"id":"prt_2","sessionID":"ses_main","messageID":"msg_a","type":"tool","callID":"call_2","tool":"bash","state":{"status":"error","input":{"command":"npm test"},"title":"Run tests"}}

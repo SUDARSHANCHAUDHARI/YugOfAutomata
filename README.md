@@ -45,6 +45,7 @@ The CLI binds to `127.0.0.1` and prints one URL. Open it to see the city.
 | --- | --- |
 | Claude Code | `~/.claude/projects/**/*.jsonl` |
 | Codex | `~/.codex/sessions/**/*.jsonl` |
+| OpenCode | `~/.local/share/opencode/storage/{session,message,part}` |
 
 See [docs/sources.md](docs/sources.md) for how each transcript format is parsed.
 

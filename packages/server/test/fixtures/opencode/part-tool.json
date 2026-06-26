@@ -1,0 +1,1 @@
+{"id":"prt_1","sessionID":"ses_main","messageID":"msg_a","type":"tool","callID":"call_1","tool":"edit","state":{"status":"completed","input":{"filePath":"src/widget.ts"},"title":"Edit widget"}}

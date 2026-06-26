@@ -36,6 +36,24 @@ interface in `packages/server/src/adapters/` and registering it in
   `model_context_window` are used; otherwise the context gauge falls back to
   `rate_limits.*.used_percent`.
 
+## OpenCode
+
+- **Storage:** `${XDG_DATA_HOME:-~/.local/share}/opencode/storage`, which keeps
+  per-event JSON (not append-only JSONL): `session/<project>/<sessionId>.json`,
+  `message/<sessionId>/<messageId>.json`, and `part/<messageId>/<partId>.json`.
+  The adapter therefore uses a whole-file watch (`watchFiles`) instead of the
+  byte-offset tailer, ignoring files present at startup so old sessions don't
+  flood the world.
+- **Session:** `directory` (cwd) and `title`; a `parentID` marks a sub-session,
+  emitted as a worker linked to its parent.
+- **Model & tokens:** assistant messages carry `modelID` and `tokens` (context is
+  `input + cache.read + cache.write`).
+- **Tools:** `part` files of `type: "tool"` carry `tool`, `state.status`
+  (`running`/`completed`/`error`), and `state.input`. Tool names are normalized
+  (`bash → shell`, `edit → edit_file`, `read → read_file`, `grep → rg`,
+  `webfetch → web_fetch`, `task → subagent`, …); an `error` status routes to the
+  Infirmary.
+
 ## Tool → building mapping
 
 The default mapping lives in `@yug-of-automata/shared` (`DEFAULT_BUILDING_MAPPING`).

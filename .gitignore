@@ -9,3 +9,4 @@ coverage/
 .vite/
 local.properties
 .flow/
+docs/superpowers/

@@ -73,6 +73,10 @@ pnpm build       # builds client and the bundled CLI into packages/cli/dist
 
 Architecture: [docs/architecture.md](docs/architecture.md) · Contributing: [docs/contributing.md](docs/contributing.md)
 
+## Author
+
+Built by [Sudarshan Chaudhari](https://github.com/SUDARSHANCHAUDHARI) (SudarshanTechLabs).
+
 ## License
 
-MIT
+MIT © Sudarshan Chaudhari

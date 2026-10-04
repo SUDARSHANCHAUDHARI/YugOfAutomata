@@ -10,3 +10,5 @@ coverage/
 local.properties
 .flow/
 docs/superpowers/
+
+repoguard-results/

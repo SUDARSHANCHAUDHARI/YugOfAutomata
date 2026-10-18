@@ -10,3 +10,6 @@ coverage/
 local.properties
 .flow/
 docs/superpowers/
+
+# repoguard scan output
+repoguard-results/
